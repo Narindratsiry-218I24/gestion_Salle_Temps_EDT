@@ -1,0 +1,21 @@
+# Visual Studio
+.vs/
+[Bb]in/
+[Ob]j/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# NuGet
+packages/
+*.nupkg
+
+# Environment variables
+.env
+.env.local
+
+# Others
+*.log
+App_Data/*.mdf
+App_Data/*.ldf

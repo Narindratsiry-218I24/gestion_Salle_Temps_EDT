@@ -15,6 +15,7 @@ namespace Gestion_Salle_classe
     {
         protected void Application_Start()
         {
+            DotNetEnv.Env.Load();
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);

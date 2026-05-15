@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data.Entity;
 using System.Linq;
 
@@ -6,8 +6,19 @@ namespace Gestion_Salle_classe.Models
 {
     public class EMITDbContext : DbContext
     {
-        public EMITDbContext() : base("name=EMITDbContext")
+        public EMITDbContext() : base(GetConnectionString())
         {
+        }
+
+        private static string GetConnectionString()
+        {
+            var server = Environment.GetEnvironmentVariable("DB_SERVER") ?? "localhost";
+            var port = Environment.GetEnvironmentVariable("DB_PORT") ?? "5432";
+            var database = Environment.GetEnvironmentVariable("DB_NAME") ?? "EMIT_EDT_DB";
+            var user = Environment.GetEnvironmentVariable("DB_USER") ?? "postgres";
+            var password = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "tsiririmlay";
+
+            return $"Server={server};Port={port};Database={database};User Id={user};Password={password};";
         }
 
         public DbSet<Mention> Mentions { get; set; }
