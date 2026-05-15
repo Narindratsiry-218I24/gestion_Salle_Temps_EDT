@@ -10,18 +10,16 @@ namespace Gestion_Salle_classe.Models
     {
         [Key]
         [Column("id_salle")]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int IdSalle { get; set; }
 
-        [Required]
-        [Column("code_batiment", TypeName = "char")]
         [StringLength(1)]
+        [Column("code_batiment", TypeName = "bpchar")]
         public string CodeBatiment { get; set; }
 
-        [Required]
         [Column("etage")]
         public int Etage { get; set; }
 
-        [Required]
         [StringLength(10)]
         [Column("numero_porte")]
         public string NumeroPorte { get; set; }
@@ -30,7 +28,6 @@ namespace Gestion_Salle_classe.Models
         [Column("nom_salle")]
         public string NomSalle { get; set; }
 
-        [Required]
         [Column("capacite")]
         public int Capacite { get; set; }
 

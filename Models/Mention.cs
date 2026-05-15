@@ -10,14 +10,15 @@ namespace Gestion_Salle_classe.Models
     {
         [Key]
         [Column("id_mention")]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int IdMention { get; set; }
 
         [Required]
         [StringLength(20)]
+        [Index(IsUnique = true)]
         [Column("code_mention")]
         public string CodeMention { get; set; }
 
-        [Required]
         [StringLength(100)]
         [Column("nom_mention")]
         public string NomMention { get; set; }

@@ -10,17 +10,16 @@ namespace Gestion_Salle_classe.Models
     {
         [Key]
         [Column("id_filiere")]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int IdFiliere { get; set; }
 
         [Column("id_mention")]
         public int IdMention { get; set; }
 
-        [Required]
         [StringLength(20)]
         [Column("code_filiere")]
         public string CodeFiliere { get; set; }
 
-        [Required]
         [StringLength(100)]
         [Column("nom_filiere")]
         public string NomFiliere { get; set; }

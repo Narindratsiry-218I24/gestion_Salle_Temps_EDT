@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Gestion_Salle_classe.Models
 {
     [Table("utilisateur")]
@@ -32,7 +31,6 @@ namespace Gestion_Salle_classe.Models
         [StringLength(20)]
         [Column("role")]
         public string Role { get; set; }
-
 
     }
 }

@@ -10,17 +10,16 @@ namespace Gestion_Salle_classe.Models
     {
         [Key]
         [Column("id_matiere")]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int IdMatiere { get; set; }
 
         [Column("id_filiere")]
         public int IdFiliere { get; set; }
 
-        [Required]
         [StringLength(20)]
         [Column("code_matiere")]
         public string CodeMatiere { get; set; }
 
-        [Required]
         [StringLength(100)]
         [Column("nom_matiere")]
         public string NomMatiere { get; set; }
@@ -28,7 +27,6 @@ namespace Gestion_Salle_classe.Models
         [Column("id_ref_semestre")]
         public int IdRefSemestre { get; set; }
 
-        [Required]
         [Column("credit")]
         public int Credit { get; set; }
 

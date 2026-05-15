@@ -10,26 +10,24 @@ namespace Gestion_Salle_classe.Models
     {
         [Key]
         [Column("id_creneau")]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int IdCreneau { get; set; }
 
         [Column("id_cours")]
         public int IdCours { get; set; }
 
-        [Required]
-        [StringLength(15)]
+        [StringLength(10)]
         [Column("jour_semaine")]
         public string JourSemaine { get; set; }
 
-        [Required]
         [Column("heure_debut")]
         public TimeSpan HeureDebut { get; set; }
 
-        [Required]
         [Column("heure_fin")]
         public TimeSpan HeureFin { get; set; }
 
-        [Column("semaine_type", TypeName = "char")]
         [StringLength(1)]
+        [Column("semaine_type", TypeName = "bpchar")]
         public string SemaineType { get; set; }
 
         // Navigation properties
