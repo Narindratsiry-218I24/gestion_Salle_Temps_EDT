@@ -1,12 +1,13 @@
 using System;
 using System.Data.Entity;
 using System.Linq;
+using Npgsql;
 
 namespace Gestion_Salle_classe.Models
 {
     public class EMITDbContext : DbContext
     {
-        public EMITDbContext() : base(GetConnectionString())
+        public EMITDbContext() : base(new NpgsqlConnection(GetConnectionString()), true)
         {
         }
 
