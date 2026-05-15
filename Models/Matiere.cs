@@ -1,0 +1,44 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Gestion_Salle_classe.Models
+{
+    [Table("matiere")]
+    public class Matiere
+    {
+        [Key]
+        [Column("id_matiere")]
+        public int IdMatiere { get; set; }
+
+        [Column("id_filiere")]
+        public int IdFiliere { get; set; }
+
+        [Required]
+        [StringLength(20)]
+        [Column("code_matiere")]
+        public string CodeMatiere { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        [Column("nom_matiere")]
+        public string NomMatiere { get; set; }
+
+        [Column("id_ref_semestre")]
+        public int IdRefSemestre { get; set; }
+
+        [Required]
+        [Column("credit")]
+        public int Credit { get; set; }
+
+        // Navigation properties
+        [ForeignKey("IdFiliere")]
+        public virtual Filiere Filiere { get; set; }
+
+        [ForeignKey("IdRefSemestre")]
+        public virtual RefSemestre RefSemestre { get; set; }
+
+        public virtual ICollection<Cours> Cours { get; set; }
+    }
+}
