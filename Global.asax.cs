@@ -6,8 +6,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using System.Web.Security;
-using System.Web.SessionState;
+using DotNetEnv;
 
 namespace Gestion_Salle_classe
 {
@@ -15,6 +14,16 @@ namespace Gestion_Salle_classe
     {
         protected void Application_Start()
         {
+            try
+            {
+                string envPath = System.IO.Path.Combine(HttpRuntime.AppDomainAppPath, ".env");
+                if (System.IO.File.Exists(envPath))
+                {
+                    DotNetEnv.Env.Load(envPath);
+                }
+            }
+            catch (Exception) { /* Ignored if .env missing */ }
+
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);

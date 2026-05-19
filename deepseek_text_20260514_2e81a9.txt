@@ -1,0 +1,31 @@
+
+---
+
+## 🔑 Clés étrangères récapitulatives
+
+| Table | Clé étrangère | Référence |
+|-------|---------------|-----------|
+| FILIERE | id_mention | MENTION(id_mention) |
+| NIVEAU | id_mention | MENTION(id_mention) |
+| REF_SEMESTRE | id_niveau | NIVEAU(id_niveau) |
+| SEMESTRE | id_ref_semestre | REF_SEMESTRE(id_ref_semestre) |
+| SEMESTRE | id_annee | ANNEE_ACADEMIQUE(id_annee) |
+| CLASSE | id_filiere | FILIERE(id_filiere) |
+| CLASSE | id_semestre | SEMESTRE(id_semestre) |
+| MATIERE | id_filiere | FILIERE(id_filiere) |
+| MATIERE | id_ref_semestre | REF_SEMESTRE(id_ref_semestre) |
+| DISPONIBILITE_PROF | id_professeur | PROFESSEUR(id_professeur) |
+| COURS | id_matiere | MATIERE(id_matiere) |
+| COURS | id_professeur | PROFESSEUR(id_professeur) |
+| COURS | id_classe | CLASSE(id_classe) |
+| COURS | id_salle | SALLE(id_salle) |
+| COURS | id_semestre | SEMESTRE(id_semestre) |
+| CRENEAU | id_cours | COURS(id_cours) |
+| DEMANDE_EDT | id_demandeur | UTILISATEUR(id_utilisateur) |
+| DEMANDE_EDT | id_validateur | UTILISATEUR(id_utilisateur) |
+| DEMANDE_EDT | id_cours | COURS(id_cours) |
+| DEMANDE_EDT | id_salle | SALLE(id_salle) |
+
+---
+
+✅ Ce modèle contient 15 tables normalisées (3ème forme normale) avec toutes leurs relations.

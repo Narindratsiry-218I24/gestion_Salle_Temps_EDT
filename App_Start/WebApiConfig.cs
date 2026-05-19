@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace Gestion_Salle_classe
 {
@@ -10,6 +11,8 @@ namespace Gestion_Salle_classe
         public static void Register(HttpConfiguration config)
         {
             // Web API configuration and services
+            var cors = new EnableCorsAttribute("*", "*", "*");
+            config.EnableCors(cors);
 
             // Web API routes
             config.MapHttpAttributeRoutes();
@@ -19,6 +22,10 @@ namespace Gestion_Salle_classe
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
+
+            // Ignore circular references when serializing to JSON
+            var json = config.Formatters.JsonFormatter;
+            json.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
         }
     }
 }
