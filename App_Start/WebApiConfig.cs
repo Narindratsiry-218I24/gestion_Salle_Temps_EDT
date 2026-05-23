@@ -23,6 +23,9 @@ namespace Gestion_Salle_classe
                 defaults: new { id = RouteParameter.Optional }
             );
 
+            // Remove XML formatter to force JSON and avoid DynamicProxy serialization issues
+            config.Formatters.Remove(config.Formatters.XmlFormatter);
+
             // Ignore circular references when serializing to JSON
             var json = config.Formatters.JsonFormatter;
             json.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
