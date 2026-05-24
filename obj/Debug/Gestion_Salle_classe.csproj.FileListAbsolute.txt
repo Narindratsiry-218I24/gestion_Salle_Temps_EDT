@@ -1,0 +1,4 @@
+C:\Users\chris\OneDrive\Desktop\projet_ASPNET\gestion_Salle_Temps_EDT\obj\Debug\Gestion_Salle_classe.csproj.AssemblyReference.cache
+C:\Users\chris\OneDrive\Desktop\projet_ASPNET\gestion_Salle_Temps_EDT\obj\Debug\Gestion_Salle_classe.Migrations.InitialCreate.resources
+C:\Users\chris\OneDrive\Desktop\projet_ASPNET\gestion_Salle_Temps_EDT\obj\Debug\Gestion_Salle_classe.csproj.GenerateResource.cache
+C:\Users\chris\OneDrive\Desktop\projet_ASPNET\gestion_Salle_Temps_EDT\obj\Debug\Gestion_Salle_classe.csproj.CoreCompileInputs.cache
