@@ -13,12 +13,19 @@ namespace Gestion_Salle_classe.Controllers
     {
         private EMITDbContext db = new EMITDbContext();
 
-        // GET: api/Salle
+        // GET: api/Salle?batiment=A&type=cours&etage=1
         [HttpGet]
         [Route("")]
-        public IHttpActionResult GetSalles()
+        public IHttpActionResult GetSalles(string batiment = null, string type = null, int? etage = null)
         {
-            return Ok(db.Salles.ToList());
+            var query = db.Salles.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(batiment) && batiment.ToLower() != "all")
+                query = query.Where(s => s.CodeBatiment == batiment);
+            if (!string.IsNullOrWhiteSpace(type) && type.ToLower() != "all")
+                query = query.Where(s => s.TypeSalle == type);
+            if (etage.HasValue)
+                query = query.Where(s => s.Etage == etage.Value);
+            return Ok(query.ToList());
         }
 
         // GET: api/Salle/5
@@ -44,10 +51,15 @@ namespace Gestion_Salle_classe.Controllers
                 return BadRequest(ModelState);
             }
 
+            if (salle.IdSalle <= 0)
+            {
+                salle.IdSalle = db.Salles.Any() ? db.Salles.Max(s => s.IdSalle) + 1 : 1;
+            }
+
             db.Salles.Add(salle);
             db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = salle.IdSalle }, salle);
+            return Ok(salle);
         }
 
         // PUT: api/Salle/5

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Diagnostics;
 using System.Web.Http;
 using Gestion_Salle_classe.Models;
 
@@ -17,9 +18,17 @@ namespace Gestion_Salle_classe.Controllers
         [Route("")]
         public IHttpActionResult GetCours()
         {
-            var cours = db.Cours.Include(c => c.Matiere).Include(c => c.Professeur)
-                        .Include(c => c.Classe).Include(c => c.Salle).ToList();
-            return Ok(cours);
+            try
+            {
+                var cours = db.Cours.Include(c => c.Matiere).ToList();
+                return Ok(cours);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Exception in GetCours: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
+                return InternalServerError(ex);
+            }
         }
 
         [HttpGet]

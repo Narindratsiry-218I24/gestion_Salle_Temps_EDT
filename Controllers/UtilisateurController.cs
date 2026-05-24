@@ -24,25 +24,50 @@ namespace Gestion_Salle_classe.Controllers
         [Route("Login")]
         public IHttpActionResult Login(LoginModel login)
         {
+            if (login == null || string.IsNullOrEmpty(login.Email))
+            {
+                return BadRequest("Email requis.");
+            }
+
             try 
             {
-                var user = db.Utilisateurs.FirstOrDefault(u => u.Email == login.Email);
+                var user = db.Utilisateurs.FirstOrDefault(u => u.Email.ToLower() == login.Email.ToLower());
                 if (user != null)
                 {
-                    return Ok(new { IdUtilisateur = user.IdUtilisateur, Email = user.Email, Role = user.Role });
+                    return Ok(new {
+                        IdUtilisateur = user.IdUtilisateur,
+                        Nom = user.Nom,
+                        Prenom = user.Prenom,
+                        Email = user.Email,
+                        Role = user.Role
+                    });
                 }
             }
-            catch (Exception) 
+            catch (Exception ex) 
             {
-                // Ignorer l'erreur DB si la table n'est pas encore créée et utiliser le fallback
+                // Log l'erreur si nécessaire : System.Diagnostics.Debug.WriteLine(ex.Message);
             }
             
-            // Fallback for testing if DB is empty or user not found
-            if (login.Email == "admin@emit.mg") return Ok(new { IdUtilisateur = 1, Email = "admin@emit.mg", Role = "admin" });
-            if (login.Email == "demandeur@emit.mg") return Ok(new { IdUtilisateur = 2, Email = "demandeur@emit.mg", Role = "demandeur" });
-            if (login.Email == "validateur@emit.mg") return Ok(new { IdUtilisateur = 3, Email = "validateur@emit.mg", Role = "validateur" });
+            // Fallback for testing - Ireto no kaonty azonao ampiasaina avy hatrany
+            if (login.Email.ToLower() == "admin@emit.mg") 
+                return Ok(new { IdUtilisateur = 1, Nom = "Admin", Prenom = "EMIT", Email = "admin@emit.mg", Role = "admin" });
+            
+            if (login.Email.ToLower() == "demandeur@emit.mg") 
+                return Ok(new { IdUtilisateur = 2, Nom = "Demandeur", Prenom = "Test", Email = "demandeur@emit.mg", Role = "demandeur" });
+            
+            if (login.Email.ToLower() == "validateur@emit.mg") 
+                return Ok(new { IdUtilisateur = 3, Nom = "Validateur", Prenom = "Test", Email = "validateur@emit.mg", Role = "validateur" });
 
             return Unauthorized();
+        }
+
+        [HttpGet]
+        [Route("{id:int}")]
+        public IHttpActionResult GetUtilisateur(int id)
+        {
+            var user = db.Utilisateurs.Find(id);
+            if (user == null) return NotFound();
+            return Ok(user);
         }
 
         [HttpPost]
@@ -50,9 +75,40 @@ namespace Gestion_Salle_classe.Controllers
         public IHttpActionResult Register(Utilisateur utilisateur)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (db.Utilisateurs.Any(u => u.Email == utilisateur.Email))
+                return BadRequest("Cet email est déjà utilisé.");
             db.Utilisateurs.Add(utilisateur);
             db.SaveChanges();
             return Ok(utilisateur);
+        }
+
+        [HttpPut]
+        [Route("{id:int}")]
+        public IHttpActionResult UpdateUtilisateur(int id, Utilisateur utilisateur)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (id != utilisateur.IdUtilisateur) return BadRequest();
+
+            var existing = db.Utilisateurs.Find(id);
+            if (existing == null) return NotFound();
+
+            existing.Nom = utilisateur.Nom;
+            existing.Prenom = utilisateur.Prenom;
+            existing.Email = utilisateur.Email;
+            existing.Role = utilisateur.Role;
+            db.SaveChanges();
+            return Ok(existing);
+        }
+
+        [HttpDelete]
+        [Route("{id:int}")]
+        public IHttpActionResult DeleteUtilisateur(int id)
+        {
+            var user = db.Utilisateurs.Find(id);
+            if (user == null) return NotFound();
+            db.Utilisateurs.Remove(user);
+            db.SaveChanges();
+            return Ok(user);
         }
 
         protected override void Dispose(bool disposing)

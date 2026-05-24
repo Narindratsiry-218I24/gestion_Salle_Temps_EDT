@@ -21,7 +21,8 @@ namespace Gestion_Salle_classe.Controllers
                 TotalProfesseurs = db.Professeurs.Count(),
                 TotalClasses = db.Classes.Count(),
                 TotalCours = db.Cours.Count(),
-                DemandesAttente = db.DemandesEdt.Count(d => d.Statut == "en_attente")
+                DemandesAttente = db.DemandesEdt.Count(d =>
+                    d.Statut == "en_attente" || d.Statut == "en attente" || d.Statut == "pending")
             };
 
             return Ok(stats);

@@ -287,6 +287,7 @@
     <Compile Include="Controllers\ClasseController.cs" />
     <Compile Include="Controllers\CoursController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
+    <Compile Include="Helpers\UserContextHelper.cs" />
     <Compile Include="Controllers\DemandeEDTController.cs" />
     <Compile Include="Controllers\EDTController.cs" />
     <Compile Include="Controllers\HomeController.cs" />

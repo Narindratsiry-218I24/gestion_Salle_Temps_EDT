@@ -18,7 +18,12 @@ namespace Gestion_Salle_classe.Controllers
         [Route("Hebdomadaire")]
         public IHttpActionResult GetHebdomadaire(int? classeId = null, int? profId = null, int? salleId = null)
         {
-            var query = db.Cours.Include(c => c.Matiere).Include(c => c.Professeur).Include(c => c.Classe).Include(c => c.Salle);
+            var query = db.Cours
+                .Include(c => c.Matiere)
+                .Include(c => c.Professeur)
+                .Include(c => c.Classe)
+                .Include(c => c.Salle)
+                .Include(c => c.Creneaux);
 
             if (classeId.HasValue) query = query.Where(c => c.IdClasse == classeId);
             if (profId.HasValue) query = query.Where(c => c.IdProfesseur == profId);
@@ -34,6 +39,7 @@ namespace Gestion_Salle_classe.Controllers
         {
             var cours = db.Cours.Where(c => c.IdSalle == id)
                         .Include(c => c.Matiere).Include(c => c.Professeur).Include(c => c.Classe)
+                        .Include(c => c.Creneaux)
                         .ToList();
             return Ok(cours);
         }
@@ -45,6 +51,7 @@ namespace Gestion_Salle_classe.Controllers
         {
             var cours = db.Cours.Where(c => c.IdClasse == id)
                         .Include(c => c.Matiere).Include(c => c.Professeur).Include(c => c.Salle)
+                        .Include(c => c.Creneaux)
                         .ToList();
             return Ok(cours);
         }
@@ -56,6 +63,7 @@ namespace Gestion_Salle_classe.Controllers
         {
             var cours = db.Cours.Where(c => c.IdProfesseur == id)
                         .Include(c => c.Matiere).Include(c => c.Classe).Include(c => c.Salle)
+                        .Include(c => c.Creneaux)
                         .ToList();
             return Ok(cours);
         }

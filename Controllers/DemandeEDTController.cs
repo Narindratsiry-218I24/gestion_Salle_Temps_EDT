@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Web.Http;
 using Gestion_Salle_classe.Models;
+using Gestion_Salle_classe.Helpers;
 
 namespace Gestion_Salle_classe.Controllers
 {
@@ -13,12 +14,43 @@ namespace Gestion_Salle_classe.Controllers
     {
         private EMITDbContext db = new EMITDbContext();
 
+        private static bool IsPending(string statut)
+        {
+            if (string.IsNullOrEmpty(statut)) return false;
+            var s = statut.Replace(" ", "_").ToLowerInvariant();
+            return s == "en_attente" || s == "pending";
+        }
+
+        private static string NormalizeStatut(string statut)
+        {
+            if (string.IsNullOrEmpty(statut)) return "en_attente";
+            var s = statut.Replace(" ", "_").ToLowerInvariant();
+            if (s == "en_attente" || s == "pending") return "en_attente";
+            if (s == "validée" || s == "validee" || s == "approved") return "validée";
+            if (s == "refusée" || s == "refusee" || s == "rejected") return "refusée";
+            return statut;
+        }
+
         [HttpGet]
         [Route("")]
         public IHttpActionResult GetDemandes()
         {
-            var demandes = db.DemandesEdt.Include(d => d.Demandeur).Include(d => d.Cours).ToList();
-            return Ok(demandes);
+            var ctx = UserContextHelper.FromRequest(ActionContext);
+            var query = db.DemandesEdt
+                .Include(d => d.Demandeur)
+                .Include(d => d.Cours.Matiere)
+                .Include(d => d.Salle)
+                .AsQueryable();
+
+            if (ctx.IsAuthenticated)
+            {
+                if (ctx.Role == "demandeur")
+                    query = query.Where(d => d.IdDemandeur == ctx.UserId.Value);
+                else if (ctx.Role == "validateur")
+                    query = query.Where(d => IsPending(d.Statut));
+            }
+
+            return Ok(query.ToList());
         }
 
         [HttpPost]
@@ -30,10 +62,7 @@ namespace Gestion_Salle_classe.Controllers
             try
             {
                 // Force a valid status if somehow it's null
-                if (string.IsNullOrEmpty(demande.Statut))
-                {
-                    demande.Statut = "en attente";
-                }
+                demande.Statut = NormalizeStatut(demande.Statut);
 
                 db.DemandesEdt.Add(demande);
                 db.SaveChanges();
@@ -81,7 +110,27 @@ namespace Gestion_Salle_classe.Controllers
                 demande.Cours.IdSalle = demande.IdSalle.Value;
             }
 
+            var ctx = UserContextHelper.FromRequest(ActionContext);
+            if (ctx.IsAuthenticated && ctx.Role == "validateur")
+                demande.IdValidateur = ctx.UserId;
+
             demande.Statut = "validée";
+            db.SaveChanges();
+            return Ok(demande);
+        }
+
+        [HttpPost]
+        [Route("{id:int}/Refuser")]
+        public IHttpActionResult RefuserDemande(int id)
+        {
+            var demande = db.DemandesEdt.Find(id);
+            if (demande == null) return NotFound();
+
+            var ctx = UserContextHelper.FromRequest(ActionContext);
+            if (ctx.IsAuthenticated && ctx.Role == "validateur")
+                demande.IdValidateur = ctx.UserId;
+
+            demande.Statut = "refusée";
             db.SaveChanges();
             return Ok(demande);
         }
