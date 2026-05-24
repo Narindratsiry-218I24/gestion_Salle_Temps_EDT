@@ -35,10 +35,36 @@ namespace Gestion_Salle_classe.Controllers
         [Route("")]
         public IHttpActionResult CreateMatiere(Matiere matiere)
         {
+            if (matiere == null) return BadRequest("Les données de la matière sont vides.");
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            db.Matieres.Add(matiere);
-            db.SaveChanges();
-            return CreatedAtRoute("DefaultApi", new { id = matiere.IdMatiere }, matiere);
+
+            try
+            {
+                if (matiere.IdMatiere == 0)
+                {
+                    var maxId = db.Matieres.Select(m => (int?)m.IdMatiere).Max();
+                    matiere.IdMatiere = (maxId ?? 0) + 1;
+                }
+
+                db.Matieres.Add(matiere);
+                db.SaveChanges();
+                return CreatedAtRoute("DefaultApi", new { id = matiere.IdMatiere }, matiere);
+            }
+            catch (System.Data.Entity.Validation.DbEntityValidationException ex)
+            {
+                var errorMessages = ex.EntityValidationErrors
+                        .SelectMany(x => x.ValidationErrors)
+                        .Select(x => x.ErrorMessage);
+                var fullErrorMessage = string.Join("; ", errorMessages);
+                var exceptionMessage = string.Concat(ex.Message, " Les erreurs de validation sont : ", fullErrorMessage);
+                return BadRequest(exceptionMessage);
+            }
+            catch (Exception ex)
+            {
+                var innerMsg = ex.InnerException != null ? ex.InnerException.Message : "";
+                var innerInnerMsg = ex.InnerException?.InnerException != null ? ex.InnerException.InnerException.Message : "";
+                return BadRequest($"Erreur DB: {ex.Message} | Inner: {innerMsg} | Details: {innerInnerMsg}");
+            }
         }
 
         [HttpPut]
