@@ -9,6 +9,7 @@ namespace Gestion_Salle_classe.Models
     {
         public EMITDbContext() : base(new NpgsqlConnection(GetConnectionString()), true)
         {
+            this.Configuration.ProxyCreationEnabled = false;
         }
 
         private static string GetConnectionString()

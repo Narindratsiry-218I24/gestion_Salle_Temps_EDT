@@ -10,6 +10,7 @@ namespace Gestion_Salle_classe.Models
     {
         [Key]
         [Column("id_demande")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int IdDemande { get; set; }
 
         [Column("id_demandeur")]

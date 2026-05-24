@@ -38,6 +38,27 @@ namespace Gestion_Salle_classe.Controllers
         public IHttpActionResult PlanifierCours(Cours cours)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            // Vérification de conflit de salle
+            if (cours.Creneaux != null && cours.Creneaux.Any())
+            {
+                foreach (var creneau in cours.Creneaux)
+                {
+                    bool conflit = db.Creneaux.Any(c => 
+                        c.Cours.IdSalle == cours.IdSalle &&
+                        c.JourSemaine == creneau.JourSemaine &&
+                        ((creneau.HeureDebut >= c.HeureDebut && creneau.HeureDebut < c.HeureFin) ||
+                         (creneau.HeureFin > c.HeureDebut && creneau.HeureFin <= c.HeureFin) ||
+                         (creneau.HeureDebut <= c.HeureDebut && creneau.HeureFin >= c.HeureFin))
+                    );
+
+                    if (conflit)
+                    {
+                        return BadRequest("Conflit de salle détecté pour l'un des créneaux.");
+                    }
+                }
+            }
+
             db.Cours.Add(cours);
             db.SaveChanges();
             return CreatedAtRoute("DefaultApi", new { id = cours.IdCours }, cours);
