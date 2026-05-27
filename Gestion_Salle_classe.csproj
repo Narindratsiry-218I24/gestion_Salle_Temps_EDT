@@ -315,6 +315,7 @@
     <Compile Include="Models\Matiere.cs" />
     <Compile Include="Models\Mention.cs" />
     <Compile Include="Models\Niveaux.cs" />
+    <Compile Include="Models\Parcours.cs" />
     <Compile Include="Models\Professeurs.cs" />
     <Compile Include="Models\Ref_semestre.cs" />
     <Compile Include="Models\Salle.cs" />

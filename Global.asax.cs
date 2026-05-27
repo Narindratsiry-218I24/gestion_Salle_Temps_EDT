@@ -14,6 +14,9 @@ namespace Gestion_Salle_classe
     {
         protected void Application_Start()
         {
+            // Ignore EF model changes verification
+            System.Data.Entity.Database.SetInitializer<Gestion_Salle_classe.Models.EMITDbContext>(null);
+
             try
             {
                 string envPath = System.IO.Path.Combine(HttpRuntime.AppDomainAppPath, ".env");
@@ -33,11 +36,18 @@ namespace Gestion_Salle_classe
 
         protected void Application_BeginRequest()
         {
-            if (Request.Headers.AllKeys.Contains("Origin") && Request.HttpMethod == "OPTIONS")
+            // Handle OPTIONS preflight requests explicitly
+            // (CORS headers are managed by WebApiConfig's EnableCorsAttribute)
+            if (Request.HttpMethod == "OPTIONS")
             {
-                Response.Headers.Add("Access-Control-Allow-Origin", "*");
-                Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Accept, Authorization");
-                Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+                var origin = Request.Headers["Origin"];
+                if (!string.IsNullOrEmpty(origin))
+                {
+                    Response.Headers.Set("Access-Control-Allow-Origin", origin);
+                    Response.Headers.Set("Access-Control-Allow-Headers", "Content-Type, Accept, Authorization, X-User-Id, X-User-Role");
+                    Response.Headers.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+                    Response.Headers.Set("Access-Control-Max-Age", "86400");
+                }
                 Response.StatusCode = 200;
                 Response.End();
             }

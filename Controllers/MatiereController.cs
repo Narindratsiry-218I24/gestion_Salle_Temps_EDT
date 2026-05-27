@@ -17,16 +17,103 @@ namespace Gestion_Salle_classe.Controllers
         [Route("")]
         public IHttpActionResult GetMatieres()
         {
-            var matieres = db.Matieres.Include(m => m.Filiere).Include(m => m.RefSemestre).ToList();
-            return Ok(matieres);
+            try
+            {
+                var matieres = db.Matieres
+                    .Select(m => new {
+                    m.IdMatiere,
+                    m.IdFiliere,
+                    m.CodeMatiere,
+                    m.NomMatiere,
+                    m.IdRefSemestre,
+                    m.Credit,
+                    Filiere = m.Filiere == null ? null : new {
+                        m.Filiere.IdFiliere,
+                        m.Filiere.NomFiliere,
+                        m.Filiere.CodeFiliere,
+                        m.Filiere.IdMention,
+                        m.Filiere.IdParcours,
+                        Mention = m.Filiere.Mention == null ? null : new {
+                            m.Filiere.Mention.IdMention,
+                            m.Filiere.Mention.CodeMention,
+                            m.Filiere.Mention.NomMention
+                        },
+                        Parcours = m.Filiere.Parcours == null ? null : new {
+                            m.Filiere.Parcours.IdParcours,
+                            m.Filiere.Parcours.CodeParcours,
+                            m.Filiere.Parcours.NomParcours,
+                            m.Filiere.Parcours.Cycle
+                        }
+                    },
+                    RefSemestre = m.RefSemestre == null ? null : new {
+                        m.RefSemestre.IdRefSemestre,
+                        m.RefSemestre.CodeSemestre,
+                        m.RefSemestre.Ordre,
+                        Niveau = m.RefSemestre.Niveau == null ? null : new {
+                            m.RefSemestre.Niveau.IdNiveau,
+                            m.RefSemestre.Niveau.CodeNiveau
+                        }
+                    }
+                })
+                .ToList();
+
+                return Ok(matieres);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Erreur: {ex.Message}");
+            }
         }
 
+
         [HttpGet]
-        [Route("{id:int}")]
+        [Route("{id:int}", Name = "GetMatiereById")]
         public IHttpActionResult GetMatiere(int id)
         {
-            var matiere = db.Matieres.Include(m => m.Filiere).Include(m => m.RefSemestre)
-                            .FirstOrDefault(m => m.IdMatiere == id);
+            var matiere = db.Matieres
+                .Where(m => m.IdMatiere == id)
+                .Select(m => new
+                {
+                    m.IdMatiere,
+                    m.IdFiliere,
+                    m.CodeMatiere,
+                    m.NomMatiere,
+                    m.IdRefSemestre,
+                    m.Credit,
+                    Filiere = m.Filiere == null ? null : new
+                    {
+                        m.Filiere.IdFiliere,
+                        m.Filiere.NomFiliere,
+                        m.Filiere.CodeFiliere,
+                        m.Filiere.IdMention,
+                        m.Filiere.IdParcours,
+                        Mention = m.Filiere.Mention == null ? null : new
+                        {
+                            m.Filiere.Mention.IdMention,
+                            m.Filiere.Mention.CodeMention,
+                            m.Filiere.Mention.NomMention
+                        },
+                        Parcours = m.Filiere.Parcours == null ? null : new
+                        {
+                            m.Filiere.Parcours.IdParcours,
+                            m.Filiere.Parcours.CodeParcours,
+                            m.Filiere.Parcours.NomParcours,
+                            m.Filiere.Parcours.Cycle
+                        }
+                    },
+                    RefSemestre = m.RefSemestre == null ? null : new
+                    {
+                        m.RefSemestre.IdRefSemestre,
+                        m.RefSemestre.CodeSemestre,
+                        m.RefSemestre.Ordre,
+                        Niveau = m.RefSemestre.Niveau == null ? null : new
+                        {
+                            m.RefSemestre.Niveau.IdNiveau,
+                            m.RefSemestre.Niveau.CodeNiveau
+                        }
+                    }
+                })
+                .FirstOrDefault();
             if (matiere == null) return NotFound();
             return Ok(matiere);
         }
@@ -36,7 +123,13 @@ namespace Gestion_Salle_classe.Controllers
         public IHttpActionResult CreateMatiere(Matiere matiere)
         {
             if (matiere == null) return BadRequest("Les données de la matière sont vides.");
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+            {
+                var errors = string.Join("; ", ModelState.Values
+                                            .SelectMany(x => x.Errors)
+                                            .Select(x => x.ErrorMessage));
+                return BadRequest($"Erreur de validation: {errors}");
+            }
 
             try
             {
@@ -48,7 +141,7 @@ namespace Gestion_Salle_classe.Controllers
 
                 db.Matieres.Add(matiere);
                 db.SaveChanges();
-                return CreatedAtRoute("DefaultApi", new { id = matiere.IdMatiere }, matiere);
+                return CreatedAtRoute("GetMatiereById", new { id = matiere.IdMatiere }, matiere);
             }
             catch (System.Data.Entity.Validation.DbEntityValidationException ex)
             {

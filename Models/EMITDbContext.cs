@@ -18,7 +18,7 @@ namespace Gestion_Salle_classe.Models
             var port = Environment.GetEnvironmentVariable("DB_PORT") ?? "5432";
             var database = Environment.GetEnvironmentVariable("DB_NAME") ?? "EMIT_EDT_DB";
             var user = Environment.GetEnvironmentVariable("DB_USER") ?? "postgres";
-            var password = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "fafana";
+            var password = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "kifeko";
 
             return $"Server={server};Port={port};Database={database};User Id={user};Password={password};";
         }
@@ -26,6 +26,7 @@ namespace Gestion_Salle_classe.Models
         public DbSet<Mention> Mentions { get; set; }
         public DbSet<Filiere> Filieres { get; set; }
         public DbSet<Niveau> Niveaux { get; set; }
+        public DbSet<Parcours> Parcours { get; set; }
         public DbSet<RefSemestre> RefSemestres { get; set; }
         public DbSet<AnneeAcademique> AnneesAcademiques { get; set; }
         public DbSet<Semestre> Semestres { get; set; }

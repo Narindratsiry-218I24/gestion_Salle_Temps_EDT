@@ -26,5 +26,6 @@ namespace Gestion_Salle_classe.Models
         // Navigation properties
         public virtual ICollection<Filiere> Filieres { get; set; }
         public virtual ICollection<Niveau> Niveaux { get; set; }
+        public virtual ICollection<Parcours> Parcours { get; set; }
     }
 }

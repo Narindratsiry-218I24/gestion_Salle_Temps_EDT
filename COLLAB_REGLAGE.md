@@ -66,7 +66,7 @@ Assurez-vous que la section `<connectionStrings>` dans le fichier `Web.config` c
 ```xml
 <connectionStrings>
     <add name="EMITDbContext" 
-         connectionString="Server=localhost;Port=5432;Database=EMIT_EDT_DB;User Id=postgres;Password=votre_mot_de_passe;" 
+         connectionString="Server=localhost;Port=5432;Database=EMIT_EDT_DB;User Id=postgres;Password=kifeko;" 
          providerName="Npgsql" />
 </connectionStrings>
 ```
