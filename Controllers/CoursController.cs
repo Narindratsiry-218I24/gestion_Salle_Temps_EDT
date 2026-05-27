@@ -201,60 +201,63 @@ namespace Gestion_Salle_classe.Controllers
             if (cours.IdSalle <= 0) return BadRequest("Veuillez sélectionner une salle valide.");
             if (cours.IdSemestre <= 0) return BadRequest("Veuillez sélectionner un semestre valide.");
 
-            // Vérification de conflit de salle
+            // Vérification exhaustive de conflits
             if (cours.Creneaux != null && cours.Creneaux.Any())
             {
                 foreach (var creneau in cours.Creneaux)
                 {
-                    bool conflit = db.Creneaux.Any(c =>
+                    bool conflit = db.Creneaux.Any(c => 
                         c.Cours.IdSalle == cours.IdSalle &&
                         c.JourSemaine == creneau.JourSemaine &&
                         ((creneau.HeureDebut >= c.HeureDebut && creneau.HeureDebut < c.HeureFin) ||
                          (creneau.HeureFin > c.HeureDebut && creneau.HeureFin <= c.HeureFin) ||
                          (creneau.HeureDebut <= c.HeureDebut && creneau.HeureFin >= c.HeureFin))
                     );
+
                     if (conflit)
+                    {
                         return BadRequest("Conflit de salle détecté pour l'un des créneaux.");
+                    }
                 }
             }
 
-            // Detach navigation objects to avoid EF tracking/insert conflicts
-            cours.Matiere = null;
-            cours.Professeur = null;
-            cours.Classe = null;
-            cours.Salle = null;
-            cours.Semestre = null;
-            cours.DemandesEdt = null;
-            if (cours.Creneaux != null)
-                foreach (var c in cours.Creneaux) c.Cours = null;
+            db.Cours.Add(cours);
+            db.SaveChanges();
+            return CreatedAtRoute("DefaultApi", new { id = cours.IdCours }, cours);
+        }
 
-            if (string.IsNullOrEmpty(cours.Statut))
-                cours.Statut = "en attente";
+        [HttpPost]
+        [Route("VerifierConflit")]
+        public IHttpActionResult VerifierConflit(Cours cours)
+        {
+            if (cours.Creneaux == null || !cours.Creneaux.Any()) return Ok(new { HasConflict = false });
 
-            try
+            foreach (var creneau in cours.Creneaux)
             {
-                db.Cours.Add(cours);
-                db.SaveChanges();
-                return Ok(new {
-                    cours.IdCours, cours.IdMatiere, cours.IdProfesseur,
-                    cours.IdClasse, cours.IdSalle, cours.IdSemestre,
-                    cours.TypeCours, cours.Statut
-                });
+                // Conflit de salle
+                var cSalle = db.Creneaux.Include(c => c.Cours.Matiere).FirstOrDefault(c => 
+                    c.Cours.IdSalle == cours.IdSalle &&
+                    c.JourSemaine == creneau.JourSemaine &&
+                    c.IdCours != cours.IdCours &&
+                    ((creneau.HeureDebut >= c.HeureDebut && creneau.HeureDebut < c.HeureFin) ||
+                     (creneau.HeureFin > c.HeureDebut && creneau.HeureFin <= c.HeureFin) ||
+                     (creneau.HeureDebut <= c.HeureDebut && creneau.HeureFin >= c.HeureFin))
+                );
+                if (cSalle != null) return Ok(new { HasConflict = true, Message = $"La salle est occupée par {cSalle.Cours.Matiere.NomMatiere}." });
+
+                // Conflit de professeur
+                var cProf = db.Creneaux.Include(c => c.Cours.Matiere).FirstOrDefault(c => 
+                    c.Cours.IdProfesseur == cours.IdProfesseur &&
+                    c.JourSemaine == creneau.JourSemaine &&
+                    c.IdCours != cours.IdCours &&
+                    ((creneau.HeureDebut >= c.HeureDebut && creneau.HeureDebut < c.HeureFin) ||
+                     (creneau.HeureFin > c.HeureDebut && creneau.HeureFin <= c.HeureFin) ||
+                     (creneau.HeureDebut <= c.HeureDebut && creneau.HeureFin >= c.HeureFin))
+                );
+                if (cProf != null) return Ok(new { HasConflict = true, Message = $"Le professeur enseigne déjà {cProf.Cours.Matiere.NomMatiere}." });
             }
-            catch (System.Data.Entity.Validation.DbEntityValidationException ex)
-            {
-                var errors = string.Join("; ", ex.EntityValidationErrors
-                    .SelectMany(e => e.ValidationErrors)
-                    .Select(e => e.ErrorMessage));
-                return BadRequest($"Erreur de validation: {errors}");
-            }
-            catch (Exception ex)
-            {
-                var inner = ex.InnerException?.InnerException?.Message
-                         ?? ex.InnerException?.Message
-                         ?? ex.Message;
-                return BadRequest($"Erreur DB: {inner}");
-            }
+
+            return Ok(new { HasConflict = false });
         }
 
         [HttpPost]

@@ -16,18 +16,29 @@ namespace Gestion_Salle_classe.Controllers
         // GET: api/EDT/Hebdomadaire
         [HttpGet]
         [Route("Hebdomadaire")]
-        public IHttpActionResult GetHebdomadaire(int? classeId = null, int? profId = null, int? salleId = null)
+        public IHttpActionResult GetHebdomadaire(int? classeId = null, int? profId = null, int? salleId = null, string cycle = null, string niveau = null, string semaineType = null)
         {
             var query = db.Cours
                 .Include(c => c.Matiere)
                 .Include(c => c.Professeur)
-                .Include(c => c.Classe)
+                .Include("Classe.Filiere")
+                .Include("Classe.Semestre.RefSemestre")
                 .Include(c => c.Salle)
-                .Include(c => c.Creneaux);
+                .Include(c => c.Creneaux)
+                .AsQueryable();
 
             if (classeId.HasValue) query = query.Where(c => c.IdClasse == classeId);
             if (profId.HasValue) query = query.Where(c => c.IdProfesseur == profId);
             if (salleId.HasValue) query = query.Where(c => c.IdSalle == salleId);
+
+            if (!string.IsNullOrEmpty(cycle) && cycle != "all")
+                query = query.Where(c => c.Classe.Filiere.NomFiliere == cycle);
+
+            if (!string.IsNullOrEmpty(niveau) && niveau != "all")
+                query = query.Where(c => c.Classe.Semestre.RefSemestre.NomSemestre == niveau);
+
+            if (!string.IsNullOrEmpty(semaineType) && semaineType != "all")
+                query = query.Where(c => c.Creneaux.Any(cr => cr.SemaineType == semaineType));
 
             return Ok(query.ToList());
         }
