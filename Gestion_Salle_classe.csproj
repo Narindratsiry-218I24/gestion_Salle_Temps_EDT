@@ -284,7 +284,11 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\AnneeAcademiqueController.cs" />
     <Compile Include="Controllers\ClasseController.cs" />
+    <Compile Include="Controllers\FiliereController.cs" />
+    <Compile Include="Controllers\SemestreController.cs" />
+    <Compile Include="Controllers\MentionController.cs" />
     <Compile Include="Controllers\CoursController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Helpers\UserContextHelper.cs" />
